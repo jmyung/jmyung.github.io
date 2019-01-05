@@ -34,7 +34,9 @@ categories: cloud
 
 [![opt01](https://cdn-images-1.medium.com/max/1600/1*qIb1MTRQymx1a-Z7uvC9lg.png)]()
 
-참고 : https://medium.com/@sanghee/aws-%ED%98%84%EC%9E%AC-%EC%83%81%ED%83%9C-%ED%8C%8C%EC%95%85%ED%95%98%EA%B8%B0-7e82e8a1a27f
+
+[참고링크](https://medium.com/@sanghee/aws-%ED%98%84%EC%9E%AC-%EC%83%81%ED%83%9C-%ED%8C%8C%EC%95%85%ED%95%98%EA%B8%B0-7e82e8a1a27f)
+
 
 #### 1-2. 두번째 방법 : 더 많은 메모리 할당
 
@@ -63,7 +65,7 @@ categories: cloud
 - Compute substrate : 람다가 도는 HW. Firecracker
 - Execution Environment : 실행 환경 (ex eni, VPC 등 변수들)
 - Language runtime : JVM 최적화. 파이썬, Go는 바이너리
-- Your function : 스택의 최상단에 위치. 내 함수를 최적화할 수 있다
+- Your function : 스택의 최상단에 위치. 내 함수를 최적화 할 수 있음
 
 이중에 Execution Environment, Your function 두 영역에 대해 얘기해보겠습니다
 
@@ -74,19 +76,19 @@ categories: cloud
 모든 람다는 3개의 메인 컴포넌트가 있습니다.
 
 - Handler() function
- - 호출시 실행
- - 비즈니스 로직
+  - 호출시 실행
+  - 비즈니스 로직
 
 - Event object
- - 펑션 호출시 이벤트 트리거
+  - 펑션 호출시 이벤트 트리거
 
 - Context object
- - 비즈니스 로직과 무관
- - 실행위치, 타임아웃, 메모리 설정, 로그 그룹 등 관련
+  - 비즈니스 로직과 무관
+  - 실행위치, 타임아웃, 메모리 설정, 로그 그룹 등 관련
 
 다음의 파이선 핸들러 함수를 보시면
 
-[![opt05](https://github.com/jmyung/jmyung.github.io/blob/master/assets/images/lambda_opt_05.png?raw=true]()
+[![opt06](https://github.com/jmyung/jmyung.github.io/blob/master/assets/images/lambda_opt_05.png?raw=true)]()
 
 subFunctionA, subFunctionB에 비즈니스 로직을 담게 됩니다.
 
