@@ -154,6 +154,6 @@ subFunctionA, subFunctionB에 비즈니스 로직을 담게 됩니다.
 
 등에 대해서도 다뤘습니다.
 
-이하는 위에서 설명한 내용들을 영상으로 보실 수 있습니다.
+위에서 설명한 내용들을 영상으로 보실 수 있습니다.
 
 [![aws](http://img.youtube.com/vi/sSSMTSn2xmA/0.jpg)](https://youtu.be/sSSMTSn2xmA)
