@@ -16,7 +16,7 @@ minimal_mistakes_skin    : "default" # "air", "aqua", "contrast", "dark", "dirt"
 
 # Site Settings
 locale                   : "en-US"
-title                    : "Bicycle rider"
+title                    : "Bicycle Rider"
 title_separator          : "-"
 name                     : "Jesang Myung (Jason)"
 description              : "If you're going to do it, dare to take the most difficult path!"
