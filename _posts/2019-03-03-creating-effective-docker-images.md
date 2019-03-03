@@ -9,7 +9,7 @@ categories: cloud
 
 ### 1-1. 컨테이너 레이어 란
 
-먼저 도커의 기본 개념인 **컨테이너 레이어** 에 대해 알아 보겠습니다.
+먼저 도커의 기본 개념인 **컨테이너 레이어** 에 잠시 살펴보면, 다음과 같은 구조로 이루어져 있습니다.
 
 [![01](https://docs.docker.com/storage/storagedriver/images/container-layers.jpg)]()
 
