@@ -60,3 +60,46 @@ EXPOSE 5000
 ENTRYPOINT ["python"]
 CMD ["application.py"]
 ```
+
+ubuntu는 베이스 이미지로 read-only 레이어 입니다. 다음으로 내가 추가한 명령어들이 그 위에 다른 레이어로 올라가게 되며, 이것이 최종 이미지 사이즈의 크기를 결정하게 됩니다.
+
+### 3-2. 개선해 봅시다.
+
+#### First Step : 적절한 베이스 이미지 선택하기
+
+```sh
+[~/dev/jmyung.github.io]$ docker pull alpine
+[~/dev/jmyung.github.io]$ docker pull alpine
+[~/dev/jmyung.github.io]$ docker images
+REPOSITORY       TAG          IMAGE ID            CREATED             SIZE
+ubuntu           latest       47b19964fb50        4 weeks ago         88.1MB
+alpine           latest       caf27325b298        5 weeks ago         5.53MB
+```
+
+빌드시 사이즈가 작은 베이스 이미지를 선택할 수 있습니다. alpine이 대표적인 이미지로 ubuntu가 90MB 인 것에 비해, alpine은 겨우 5MB 남짓입니다. 최적화 같은 것을 고려하지 않고 alpine 베이스 이미지 위에 내가 추가한 명령어들로 새로운 이미지를 만든다면, 디스크 공간을 줄일 수 있습니다. MB 단위가 크기 와닿지 않는다면, 예를 들어 2GB 이미지를 사용하고 CI/CD 환경에서 200개의 배포를 수행한다고 가정하면 총 400GB의 디스크 공간이 필요합니다. 또한, 스케일링 업하는 경우 항상 얼마 만큼의 디스크 공간을 사용하는지 염두해야 합니다.
+
+```
+FROM ubuntu:latest
+LABEL maintainer jesang.myung@gmail.com  # 이메일 수정
+RUN apt-get update --y && apt-get install --y python-pip python-dev build-essential
+COPY . /all
+WORKDIR /app
+RUN pip install -r requirement2.txt # 텍스트 파일 변경
+EXPOSE 5000
+ENTRYPOINT ["python"]
+CMD ["application.py"]
+```
+도커파일로 돌아가서 이메일을 변경했다던지, 라인에 주석을 달거나 명령어를 수정하는 경우에도 매번 빌드시 디스크가 부족해질 수 있습니다.
+
+#### Slightly better : 다른 배포 선택하기
+
+```sh
+[~/dev/jmyung.github.io]$ docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+golang              latest              cee68f119e19        2 days ago          772MB
+python              latest              32260605cf7a        2 days ago          929MB
+ruby                latest              616c3cf5968b        2 days ago          870MB
+debian              latest              0af60a5c6dd0        2 days ago          101MB
+ubuntu              latest              47b19964fb50        4 weeks ago         88.1MB
+alpine              latest              caf27325b298        5 weeks ago         5.53MB
+```
