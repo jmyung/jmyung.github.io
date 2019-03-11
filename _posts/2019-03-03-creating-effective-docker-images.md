@@ -52,20 +52,25 @@ categories: cloud
 ```
 FROM ubuntu:latest
 LABEL maintainer jesang.myung@samsung.com
-RUN apt-get update --y && apt-get install --y python-pip python-dev build-essential
-COPY . /all
+RUN apt-get update -y && apt-get install -y python-pip python-dev build-essential
+COPY . /app
 WORKDIR /app
-RUN pip install -r requirement.txt
+RUN pip install -r requirements.txt
 EXPOSE 5000
 ENTRYPOINT ["python"]
 CMD ["application.py"]
 ```
 
+- requirements.txt
+```
+tensorflow
+```
+
 ubuntu는 베이스 이미지로 read-only 레이어 입니다. 다음으로 내가 추가한 명령어들이 그 위에 다른 레이어로 올라가게 되며, 이것이 최종 이미지 사이즈의 크기를 결정하게 됩니다.
 
-### 3-2. 개선해 봅시다.
+### 3-2. 개선해 보기 전에...
 
-#### First Step : 적절한 베이스 이미지 선택하기
+#### Step 1 : 적절한 베이스 이미지 선택하기
 
 ```sh
 [~/dev/jmyung.github.io]$ docker pull alpine
@@ -81,17 +86,17 @@ alpine           latest       caf27325b298        5 weeks ago         5.53MB
 ```
 FROM ubuntu:latest
 LABEL maintainer jesang.myung@gmail.com  # 이메일 수정
-RUN apt-get update --y && apt-get install --y python-pip python-dev build-essential
-COPY . /all
+RUN apt-get update -y && apt-get install -y python-pip python-dev build-essential
+COPY . /app
 WORKDIR /app
-RUN pip install -r requirement2.txt # 텍스트 파일 변경
+RUN pip install -r requirements2.txt # 텍스트 파일 변경
 EXPOSE 5000
 ENTRYPOINT ["python"]
 CMD ["application.py"]
 ```
 도커파일로 돌아가서 이메일을 변경했다던지, 라인에 주석을 달거나 명령어를 수정하는 경우에도 매번 빌드시 디스크가 부족해질 수 있습니다.
 
-#### Slightly better : 다른 배포 이미지 선택하기
+#### Step 2 : 다른 배포 이미지 선택하기
 
 ```sh
 [~/dev/jmyung.github.io]$ docker images
@@ -106,7 +111,7 @@ ruby                latest              616c3cf5968b        2 days ago          
 
 다른 리눅스 배포 이미지를 선택할 수도 있고, 개발 언어를 위해 디자인된 배포 이미지를 선택할 수도 있습니다. ubuntu 이미지에서 파이선 이미지로 바꿀 수 있고, debian 이미지에서 오피셜 go, ruby 이미지로 변경할 수 있습니다. 이러한 많은 옵션들은 내가 선택하기 나름인데, 디스크가 작은 공간에서 시작하는 경우, 아니면 빌드 시간 절약을 위해 베이스 이미지에 많은 레이어를 입히기 싫은 경우 등 여러 가지 상황이 있을 수 있습니다. 베이스 이미지 선택에 대한 전략을 세울 수 있습니다.
 
-#### full base OS 를 사용할 때 고려사항
+#### Step 3 : Full base OS 를 사용할 때 고려사항
 
 - 보안
 - 컴플라이언스
@@ -119,7 +124,7 @@ ruby                latest              616c3cf5968b        2 days ago          
 그리고 간과하는 것 중에 하나는 개발 편의성입니다. 예를 들어, 미니멀 베이스 이미지를 사용할 때 항상 같은 종류의 패키지 매니저를 가지고 있지 않습니다. 내가 평소에 생각하지 않는 많은 것(c 라이브러리)들이 미니멀 베이스 이미지에는 없습니다. 빌드에 필수적인 요소 (build essential) 미니멀 베이스 이미지에는 이런 자잘한 신경써야 하는 부분들이 많습니다. 따라서, 공간 효율성 과 이미지를 셋업하는데 얼마나 많은 일을 할 것인가 사이에 트레이드 오프가 있습니다.
 
 
-#### 도커파일을 가지고 무엇을 할 것인가?
+#### Step 4 : 도커파일을 가지고 무엇을 할 것인가?
 
 기본으로 돌아가서 도커파일이 있다고 가정해보겠습니다. 빌드를 해야합니다.
 
@@ -133,15 +138,131 @@ $  docker build       -t             hi-docker    .
  |<--buld command-->|<--태그 플래그-->|<--태그 명-->|<--빌드 패드-->|
 ```
 
-#### 플래그 활용하기
+#### Step 5 : 플래그 활용하기
 
 이미지를 빌드할 때 최종 이미지 사이즈에 영향을 주는 몇 개의 플래그가 있습니다.
 
 - --cache-from : 다른 이미지로 부터 캐싱
 - --compress : gzip을 이용하여 빌드 컨텍스트를 압축
 - --no-cache : 빌드시에 캐시를 무시
-- --squash : 새 레이어들을 싱글레이어로 압축
+- --squash : 새 레이어들을 싱글레이어로 압축 (experimental)
 
-#### 빌드 컨텍스트란 무엇인가?
+#### Step 6 : 빌드 컨텍스트란 무엇인가?
 
-13:17
+- 빌드 컨텍스트 : 현재 디렉토리 또는 지정 위치한 파일들 집합
+- 해당 파일을 빌드시에 도커 데몬에게 보냄
+
+`docker build` 수행시 다음과 같은 메세지를 보게 됩니다.
+
+`Sending build context to Docker daemon  10.51MB`
+
+빌드 컨텍스트가 커질수록 도커 이미지는 커집니다. 따라서, 불필요한 파일과 디렉토리는 제거해야 합니다.
+
+#### Step 7 : 캐시
+
+선행 도커파일 명령을 기준으로 삼아, 도커는 각각의 명령줄이 캐시 버전과 매칭되는지 확인합니다.
+매칭에 대한
+
+- ADD, COPY : 파일의 체크섬을 확인합니다.
+- 그 외 명령어 : 파일 체크섬은 보지 않고, 도커파일 내 명령어 문자열을 확인합니다.
+
+- Dockerfile 1
+```
+FROM ubuntu:latest
+RUN apt-get update
+RUN apt-get install -y mongodb-server
+```
+
+- Dockerfile 2
+```
+FROM ubuntu:latest
+RUN apt-get update
+RUN apt-get install -y mongodb-server
+RUN apt-get install -y nodejs
+```
+위 3줄은 캐시에서 가져옵니다.
+
+캐시가 깨지면, 레이어를 다시 빌드합니다.
+
+### 3-3. 이제 개선해 봅시다.
+
+#### 최초 Dockerfile
+
+```
+FROM ubuntu:latest
+LABEL maintainer jesang.myung@samsung.com
+RUN apt-get update -y && apt-get install -y python-pip python-dev build-essential
+COPY . /app
+WORKDIR /app
+RUN pip install -r requirements.txt
+EXPOSE 5000
+ENTRYPOINT ["python"]
+CMD ["application.py"]
+```
+
+#### 베이스 이미지 변경
+
+`ubuntu:latest` 에서 `python:2.7-alpine` 으로 변경
+
+```
+FROM python:2.7-alpine
+LABEL maintainer jesang.myung@samsung.com
+COPY . /app
+WORKDIR /app
+RUN pip install -r requirements.txt
+EXPOSE 5000
+ENTRYPOINT ["python"]
+CMD ["application.py"]
+```
+
+파이선으로 디자인된 이미지이기때문에 `RUN` 명령줄을 삭제할 수 있습니다.
+
+#### 캐시 무효화를 더 적게 발생하도록 수정
+
+```
+FROM python:2.7-alpine
+LABEL maintainer jesang.myung@samsung.com
+COPY requirements.txt /app
+RUN pip install -r /app/requirements.txt
+COPY . /app
+WORKDIR /app
+EXPOSE 5000
+ENTRYPOINT ["python"]
+CMD ["application.py"]
+```
+
+`COPY requirements.txt /app`의 순서를 앞에 추가하여, 캐시 무효화가 더 적게 일어나도록 합니다.
+`requirements.txt` 파일이 변경된 경우에만 레이어를 다시 생성합니다.
+
+#### RUN 명령줄을 하나로 만들기
+
+- before
+```
+FROM ubuntu:latest
+RUN apt-get update
+RUN apt-get install -y mongodb-server
+RUN apt-get install -y nodejs
+```
+
+- after
+```
+FROM ubuntu:latest
+RUN apt-get update \
+    && apt-get install -y mongodb-server \
+    && apt-get install -y nodejs
+```
+
+RUN 명령어와 관련하여 3개의 레이어에서 2개로 줄어줍니다.
+
+#### USER 변경은 레이어를 추가합니다.
+
+```
+FROM ubuntu:latest
+RUN groupadd -r babyshark && useradd -r -g babyshark babyshark
+USER babyshark
+RUN apt-get update \
+    && apt-get install -y mongodb-server \
+    && apt-get install -y nodejs
+USER root
+COPY . /app
+```
