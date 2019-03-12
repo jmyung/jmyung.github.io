@@ -63,7 +63,7 @@ CMD ["application.py"]
 
 - requirements.txt
 ```
-tensorflow
+mysql-connector-python
 ```
 
 ubuntu는 베이스 이미지로 read-only 레이어 입니다. 다음으로 내가 추가한 명령어들이 그 위에 다른 레이어로 올라가게 되며, 이것이 최종 이미지 사이즈의 크기를 결정하게 됩니다.
@@ -184,6 +184,25 @@ RUN apt-get install -y nodejs
 
 캐시가 깨지면, 레이어를 다시 빌드합니다.
 
+
+#### Step 8 : Multi-stage Builds
+
+```
+FROM ubuntu AS build-env
+RUN apt-get update && apt-get install make
+ADD . /src
+RUN cd /src && make
+
+FROM busybox
+COPY --from=build-env /src/build/app /usr/local/bin/app
+EXPOSE 80
+ENTRYPOINT /usr/local/bin/app
+```
+
+스테이지를 분할하여 하나의 스테이지에서 다른 스테이지로 아티펙트를 복사할 수 있습니다. 결과적으로 더 작은 이미지를 만듭니다.
+
+- 참고 예제 : https://blog.alexellis.io/mutli-stage-docker-builds/
+
 ### 3-3. 이제 개선해 봅시다.
 
 #### 최초 Dockerfile
@@ -191,7 +210,8 @@ RUN apt-get install -y nodejs
 ```
 FROM ubuntu:latest
 LABEL maintainer jesang.myung@samsung.com
-RUN apt-get update -y && apt-get install -y python-pip python-dev build-essential
+RUN apt-get update -y
+RUN apt-get install -y python-pip python-dev build-essential
 COPY . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
@@ -200,39 +220,14 @@ ENTRYPOINT ["python"]
 CMD ["application.py"]
 ```
 
-#### 베이스 이미지 변경
+`docker build -t elephant:v1 .`
 
-`ubuntu:latest` 에서 `python:2.7-alpine` 으로 변경
-
+- 결과
 ```
-FROM python:2.7-alpine
-LABEL maintainer jesang.myung@samsung.com
-COPY . /app
-WORKDIR /app
-RUN pip install -r requirements.txt
-EXPOSE 5000
-ENTRYPOINT ["python"]
-CMD ["application.py"]
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+elephant            v1                  c5989f1284e9        10 seconds ago      496MB
 ```
 
-파이선으로 디자인된 이미지이기때문에 `RUN` 명령줄을 삭제할 수 있습니다.
-
-#### 캐시 무효화를 더 적게 발생하도록 수정
-
-```
-FROM python:2.7-alpine
-LABEL maintainer jesang.myung@samsung.com
-COPY requirements.txt /app
-RUN pip install -r /app/requirements.txt
-COPY . /app
-WORKDIR /app
-EXPOSE 5000
-ENTRYPOINT ["python"]
-CMD ["application.py"]
-```
-
-`COPY requirements.txt /app`의 순서를 앞에 추가하여, 캐시 무효화가 더 적게 일어나도록 합니다.
-`requirements.txt` 파일이 변경된 경우에만 레이어를 다시 생성합니다.
 
 #### RUN 명령줄을 하나로 만들기
 
@@ -253,6 +248,75 @@ RUN apt-get update \
 ```
 
 RUN 명령어와 관련하여 3개의 레이어에서 2개로 줄어줍니다.
+
+- 실습
+```
+FROM ubuntu:latest
+LABEL maintainer jesang.myung@samsung.com
+RUN apt-get update -y && apt-get install -y python-pip python-dev build-essential
+COPY . /app
+WORKDIR /app
+RUN pip install -r requirements.txt
+EXPOSE 5000
+ENTRYPOINT ["python"]
+CMD ["application.py"]
+```
+
+`docker build -t elephant-slim-with-combine-run:v1 .`
+
+- 결과
+```
+REPOSITORY                            TAG                 IMAGE ID            CREATED             SIZE
+elephant-slim-with-combine-run        v1                  e15b4e896cd7        5 seconds ago       496MB
+elephant                              v1                  c5989f1284e9        8 minutes ago       496MB
+```
+
+
+#### 베이스 이미지 변경
+
+`ubuntu:latest` 에서 `python:2.7-alpine` 으로 변경
+
+```
+FROM python:2.7-alpine
+LABEL maintainer jesang.myung@samsung.com
+COPY . /app
+WORKDIR /app
+RUN pip install -r requirements.txt
+EXPOSE 5000
+ENTRYPOINT ["python"]
+CMD ["application.py"]
+```
+
+`docker build -t elephant-slim-with-change-to-alpine:v1 .`
+
+파이선으로 디자인된 이미지이기때문에 `RUN` 명령줄을 삭제할 수 있습니다.
+
+- 결과
+```
+REPOSITORY                            TAG                 IMAGE ID            CREATED             SIZE
+elephant-slim-with-combine-run        v1                  e15b4e896cd7        5 seconds ago       496MB
+elephant-slim-with-change-to-alpine   v1                  c9e13c9e3d0f        7 minutes ago       74MB
+elephant                              v1                  c5989f1284e9        8 minutes ago       496MB
+```
+
+#### 캐시 무효화를 더 적게 발생하도록 수정
+
+```
+FROM python:2.7-alpine
+LABEL maintainer jesang.myung@samsung.com
+COPY requirements.txt /app/
+RUN pip install -r /app/requirements.txt
+COPY . /app
+WORKDIR /app
+EXPOSE 5000
+ENTRYPOINT ["python"]
+CMD ["application.py"]
+```
+
+`COPY requirements.txt /app`의 순서를 앞에 추가하여, 캐시 무효화가 더 적게 일어나도록 합니다.
+`requirements.txt` 파일이 변경된 경우에만 레이어를 다시 생성합니다.
+
+`docker build -t elephant-slim-with-invalidation:v1 .`
 
 #### USER 변경은 레이어를 추가합니다.
 
