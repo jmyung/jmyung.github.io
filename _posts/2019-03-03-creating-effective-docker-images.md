@@ -280,7 +280,7 @@ REPOSITORY                            TAG                 IMAGE ID            CR
 elephant-slim-with-combine-run        v1                  e15b4e896cd7        5 seconds ago       496MB
 elephant                              v1                  c5989f1284e9        8 minutes ago       496MB
 ```
-
+위 예제는 이미지 사이즈 차이는 거의 나지 않으나, `docker inspect` 로 레이어 개수를 세보면, 레이어가 한 개가 줄어있는 것을 확인할 수 있습니다.
 
 ### Step 3 : 베이스 이미지 변경
 
