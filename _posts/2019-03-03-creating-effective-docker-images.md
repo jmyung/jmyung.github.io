@@ -68,7 +68,7 @@ ubuntu는 베이스 이미지로 read-only 레이어 입니다. 다음으로 내
 
 ### 3-2. 개선시 고려사항들
 
-#### Check 1 : 적절한 베이스 이미지 선택하기
+### Check 1 : 적절한 베이스 이미지 선택하기
 
 ```sh
 [~/dev/jmyung.github.io]$ docker pull ubuntu
@@ -94,7 +94,7 @@ CMD ["application.py"]
 ```
 이메일을 변경한다던지, 라인에 주석을 달거나 명령어를 수정하는 경우, 빌드시 디스크가 부족해질 수 있습니다.
 
-#### Check 2 : 다른 배포 이미지 선택하기
+### Check 2 : 다른 배포 이미지 선택하기
 
 ```sh
 [~/dev/jmyung.github.io]$ docker images
@@ -115,7 +115,7 @@ ruby                latest              616c3cf5968b        2 days ago          
 
 여러 가지 상황 하에서, 이미지 선택에 대한 전략을 세울 수 있습니다.
 
-#### Check 3 : 작은 사이즈 이미지 vs Full base OS 이미지
+### Check 3 : 작은 사이즈 이미지 vs Full base OS 이미지
 
 1. 보안
   - 컴플라이언스
@@ -129,9 +129,9 @@ ruby                latest              616c3cf5968b        2 days ago          
   - 개발 편의성과 관련하여, 미니멀 베이스 이미지를 사용할 때 항상 같은 종류의 패키지 매니저를 가지고 있지 않습니다.
   - 평소에 생각하지 않는 것(예 : c 라이브러리)들이 미니멀 베이스 이미지에는 없는 경우가 많습니다. 빌드에 필수적인 요소 (build essential) 미니멀 베이스 이미지에는 이런 자잘한 신경써야 하는 부분들이 많습니다.
 
-> 따라서, 공간 효율성과 이미지를 셋업하는데 얼마나 많은 일을 할 것인가 사이에 트레이드 오프가 있습니다.
+> 공간 효율성과 이미지를 셋업하는데 얼마나 많은 일을 할 것인가 사이에 트레이드 오프가 있습니다.
 
-#### Check 4 : 도커파일 빌드
+### Check 4 : 도커파일 빌드
 
 ```sh
 $  docker build       -t             hi-docker    .
@@ -140,7 +140,7 @@ $  docker build       -t             hi-docker    .
 
 뒤에서 도커파일에 변화를 가했을 때 이미지 사이즈가 달라지는지 확인해 보겠습니다.
 
-#### Check 5 : 플래그 활용하기
+### Check 5 : 플래그 활용하기
 
 이미지를 빌드할 때 최종 이미지 사이즈에 영향을 주는 몇 개의 플래그가 있습니다.
 
@@ -149,7 +149,7 @@ $  docker build       -t             hi-docker    .
 - --no-cache : 빌드시에 캐시를 무시
 - --squash : 새 레이어들을 싱글레이어로 압축
 
-#### Check 6 : 빌드 컨텍스트란 무엇인가?
+### Check 6 : 빌드 컨텍스트란 무엇인가?
 
 - 빌드 컨텍스트 : 현재 디렉토리 또는 지정 위치한 파일들 집합
 - 해당 파일을 빌드시에 도커 데몬에게 보냄
@@ -160,7 +160,7 @@ $  docker build       -t             hi-docker    .
 
 빌드 컨텍스트가 커질수록 도커 이미지는 커집니다. 따라서, 불필요한 파일과 디렉토리는 제거해야 합니다.
 
-#### Check 7 : 캐시
+### Check 7 : 캐시
 
 선행 도커파일 명령을 기준으로 삼아, 도커는 각각의 명령줄이 캐시 버전과 매칭되는지 확인합니다.
 매칭에 대한
@@ -186,7 +186,7 @@ RUN apt-get install -y nodejs
 
 캐시가 깨지면, 레이어를 다시 빌드합니다.
 
-#### Check 8 : Multi-stage Builds
+### Check 8 : Multi-stage Builds
 
 ```
 FROM ubuntu AS build-env
@@ -206,7 +206,7 @@ ENTRYPOINT /usr/local/bin/app
 
 ### 3-3. 이제 개선해 봅시다.
 
-#### Step 1 : 최초 Dockerfile
+### Step 1 : 최초 Dockerfile
 
 - Dockerfile
 ```
@@ -234,7 +234,7 @@ elephant            v1                  c5989f1284e9        10 seconds ago      
 ```
 
 
-#### Step 2 : RUN 명령줄을 하나로 만들기
+### Step 2 : RUN 명령줄을 하나로 만들기
 
 - before
 ```
@@ -282,7 +282,7 @@ elephant                              v1                  c5989f1284e9        8 
 ```
 
 
-#### Step 3 : 베이스 이미지 변경
+### Step 3 : 베이스 이미지 변경
 
 `ubuntu:latest` 에서 `python:2.7-alpine` 으로 변경
 
@@ -313,7 +313,7 @@ elephant-slim-with-change-to-alpine   v1                  c9e13c9e3d0f        7 
 elephant                              v1                  c5989f1284e9        8 minutes ago       496MB
 ```
 
-#### Step 4 : 캐시 무효화를 더 적게 발생하도록 수정
+### Step 4 : 캐시 무효화를 더 적게 발생하도록 수정
 
 - Dockerfile
 ```
@@ -336,7 +336,7 @@ CMD ["application.py"]
 docker build -t elephant-slim-with-invalidation:v1 .
 ```
 
-#### Step 5 : USER 변경은 레이어를 추가합니다.
+### Step 5 : USER 변경은 레이어를 추가합니다.
 
 - Dockerfile
 ```
