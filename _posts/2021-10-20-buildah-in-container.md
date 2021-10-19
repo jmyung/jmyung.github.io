@@ -19,7 +19,7 @@ buildah bud --no-cache -t docker.io/human537/buildah:v3 .
 buildah push docker.io/human537/buildah:v3
 ```
 
-> history : [link](https://quay.io/repository/buildah/stable/manifest/sha256:a8ea8f5de48b6285d3ac6e6a4ef5d4f0d2f0cbd7c142dcd5c90752794ba2da05)
+> buildah image history : [link](https://quay.io/repository/buildah/stable/manifest/sha256:a8ea8f5de48b6285d3ac6e6a4ef5d4f0d2f0cbd7c142dcd5c90752794ba2da05)
 
 ## Pod
 
