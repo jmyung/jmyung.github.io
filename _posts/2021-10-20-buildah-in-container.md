@@ -11,6 +11,7 @@ categories: cloud
 FROM quay.io/buildah/stable:latest
 RUN echo build:260000:65537 > /etc/subuid; echo build:260000:65537 > /etc/subgid;
 USER build
+WORKDIR /home/build
 ```
 
 ```sh
@@ -38,3 +39,36 @@ spec:
     - sleep
     - "1000000"
 ```
+
+```
+kubectl exec -it buildah /bin/bash
+```
+
+테스트 Dockerfile
+
+```
+FROM ubuntu
+MAINTAINER demousr@gmail.com
+RUN apt-get update
+RUN apt-get install -y nginx
+CMD ["echo","Image created"]
+```
+
+```sh
+buildah bud --no-cache -t ghcr.io/jmyung/test:v11 .
+```
+
+```sh
+[build@buildah ~]$ buildah images
+REPOSITORY                 TAG      IMAGE ID       CREATED          SIZE
+ghcr.io/jmyung/test        v11      49c69b667025   28 seconds ago   167 MB
+docker.io/library/ubuntu   latest   ba6acccedd29   3 days ago       75.2 MB
+```
+
+```sh
+buildah bud --no-cache -t ghcr.io/jmyung/test:v11 .
+buildah login -u $USER -p $PASSWD ghcr.io
+buildah push ghcr.io/jmyung/test:v11
+```
+
+> 다중 로그인 가능
