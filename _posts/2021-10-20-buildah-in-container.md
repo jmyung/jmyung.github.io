@@ -87,7 +87,6 @@ metadata:
 spec:
   containers:
     - image: docker:20.10.9-dind-rootless
-      imagePullPolicy: Never
       name: rootless
       env:
         - name: DOCKER_HOST
