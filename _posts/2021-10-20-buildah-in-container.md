@@ -72,3 +72,72 @@ buildah push ghcr.io/jmyung/test:v11
 ```
 
 > 다중 로그인 가능
+
+
+# Docker in containerd
+
+priviledge mode 사용
+
+yaml
+```yaml
+apiVersion: v1 
+kind: Pod 
+metadata: 
+    name: dind 
+spec: 
+    containers: 
+      - name: docker-cmds 
+        image: docker:1.12.6 
+        command: ['docker', 'run', '-p', '80:80', 'httpd:latest'] 
+        resources: 
+            requests: 
+                cpu: 10m 
+                memory: 256Mi 
+        env: 
+          - name: DOCKER_HOST 
+            value: tcp://localhost:2375 
+      - name: dind-daemon 
+        image: docker:1.12.6-dind 
+        resources: 
+            requests: 
+                cpu: 20m 
+                memory: 512Mi 
+        securityContext: 
+            privileged: true 
+        volumeMounts: 
+          - name: docker-graph-storage 
+            mountPath: /var/lib/docker 
+    volumes: 
+      - name: docker-graph-storage 
+        emptyDir: {}
+```
+
+```sh
+/ # ps -ef | grep docker
+    1 root       0:00 docker run -p 80:80 httpd:latest
+   37 root       0:00 grep docker
+
+/ # whoami
+root
+
+/ # mkdir workspace
+
+/ # cd workspace/
+
+/workspace # vi Dockerfile
+
+/workspace # docker build -t ghcr.io/jmyung/test:v11 .
+...
+Step 5 : CMD echo Image created
+ ---> Running in 4e726984505b
+ ---> 4d94b19bb349
+Removing intermediate container 4e726984505b
+Successfully built 4d94b19bb349
+/workspace # docker images
+REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
+ghcr.io/jmyung/test   v11                 4d94b19bb349        8 seconds ago       163.1 MB
+httpd                 latest              1132a4fc88fa        3 days ago          143.5 MB
+ubuntu                latest              ba6acccedd29        9 days ago          72.77 MB
+```
+
+
