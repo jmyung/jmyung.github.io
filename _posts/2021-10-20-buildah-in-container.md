@@ -157,3 +157,54 @@ drwx-----x    2 rootless rootless      4096 Oct 25 08:44 volumes
 057751b8aee876b865bfe9048b8d932f39d8334f87db273edd4ac082b0b8e088/  af2ec237c2829060f395338f9176c0b7794f5b9aa907267bbb0fd6237caed
 81d32b75be2e62e5dfd2c7f7655827e3857f882fe3e0a5452e38ca4504d8effb/  l/
 ```
+
+
+# buildkit
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: buildkitd
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/buildkitd: unconfined
+    container.seccomp.security.alpha.kubernetes.io/buildkitd: unconfined
+# see buildkit/docs/rootless.md for caveats of rootless mode
+spec:
+  containers:
+    - name: buildkitd
+      image: moby/buildkit:master-rootless
+      args:
+        - --oci-worker-no-process-sandbox
+      readinessProbe:
+        exec:
+          command:
+            - buildctl
+            - debug
+            - workers
+        initialDelaySeconds: 5
+        periodSeconds: 30
+      livenessProbe:
+        exec:
+          command:
+            - buildctl
+            - debug
+            - workers
+        initialDelaySeconds: 5
+        periodSeconds: 30
+      securityContext:
+        # To change UID/GID, you need to rebuild the image
+        runAsUser: 1000
+        runAsGroup: 1000
+```
+
+> 출처 : [링크](https://github.com/moby/buildkit/blob/master/examples/kubernetes/pod.rootless.yaml)
+
+데몬 프로세스가 하나 떠 있음
+
+```sh
+PID   USER     TIME  COMMAND
+    1 root      0:03 buildkitd
+```
+
+
