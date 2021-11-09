@@ -95,7 +95,9 @@ spec:
         privileged: true
 ```
 
-Container log
+<details>
+    <summary>Container log</summary>
+
 ```sh
 root@ske-cicd-844fbdb55c-qbl9s:~# k logs rootless
 Generating RSA private key, 4096 bit long modulus (2 primes)
@@ -198,6 +200,11 @@ time="2021-11-09T08:47:44.990988082Z" level=info msg="Daemon has completed initi
 time="2021-11-09T08:47:45.048827280Z" level=info msg="API listen on /run/user/1000/docker.sock"
 time="2021-11-09T08:47:45.052142247Z" level=info msg="API listen on [::]:2376"
 ```
+
+</details>
+
+
+
 
 ```sh
 / $ cat /etc/passwd
