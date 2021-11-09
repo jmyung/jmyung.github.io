@@ -209,4 +209,28 @@ PID   USER     TIME  COMMAND
    27 user      0:02 buildkitd --oci-worker-no-process-sandbox
 ```
 
+```sh
+~/.local $ ll
+total 24
+drwxr-sr-x    1 user     user          4096 Oct  5 23:21 .
+drwxr-sr-x    1 user     user          4096 Nov  9 04:38 ..
+drwxr-sr-x    3 user     user          4096 Oct  5 23:21 share
+drwxr-sr-x    1 user     user          4096 Nov  9 07:52 tmp
+```
+
+> 문제는 rootless 가 containerd workers 를 지원하지 않는다는 warning 메세지가 뜸
+
+```sh
+$ kubectl logs buildkitd
+time="2021-11-09T02:17:40Z" level=info msg="auto snapshotter: using overlayfs"
+time="2021-11-09T02:17:40Z" level=warning msg="NoProcessSandbox is enabled. Note that NoProcessSandbox allows build containers to kill (and potentially ptrace) an arbitrary process in the BuildKit host namespace. NoProcessSandbox should be enabled only when the BuildKit is running in a container as an unprivileged user."
+time="2021-11-09T02:17:40Z" level=info msg="found worker \"vp7yzk9i406y8cgeoi02bobas\", labels=map[org.mobyproject.buildkit.worker.executor:oci org.mobyproject.buildkit.worker.hostname:buildkitd org.mobyproject.buildkit.worker.snapshotter:overlayfs], platforms=[linux/amd64 linux/386]"
+time="2021-11-09T02:17:40Z" level=warning msg="rootless mode is not supported for containerd workers. disabling containerd worker."
+time="2021-11-09T02:17:40Z" level=info msg="found 1 workers, default=\"vp7yzk9i406y8cgeoi02bobas\""
+time="2021-11-09T02:17:40Z" level=warning msg="currently, only the default worker can be used."
+time="2021-11-09T02:17:40Z" level=info msg="running server on /run/user/1000/buildkit/buildkitd.sock"
+```
+
+
+
 
