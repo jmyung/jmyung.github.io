@@ -95,6 +95,110 @@ spec:
         privileged: true
 ```
 
+Container log
+```sh
+root@ske-cicd-844fbdb55c-qbl9s:~# k logs rootless
+Generating RSA private key, 4096 bit long modulus (2 primes)
+......................................................................................................................................................................................................................................................++++
+...........................................................................................................++++
+e is 65537 (0x010001)
+Generating RSA private key, 4096 bit long modulus (2 primes)
+................++++
+..................................++++
+e is 65537 (0x010001)
+Signature ok
+subject=CN = docker:dind server
+Getting CA Private Key
+/certs/server/cert.pem: OK
+Generating RSA private key, 4096 bit long modulus (2 primes)
+..................................................................................................................................................................................................................................................................................................++++
+......................................++++
+e is 65537 (0x010001)
+Signature ok
+subject=CN = docker:dind client
+Getting CA Private Key
+/certs/client/cert.pem: OK
+time="2021-11-09T08:47:44Z" level=warning msg="failed to mount sysfs, falling back to read-only mount: operation not permitted"
+[WARN  tini (90)] Tini is not running as PID 1 and isn't registered as a child subreaper.
+Zombie processes will not be re-parented to Tini, so zombie reaping won't work.
+To fix the problem, use the -s option or set the environment variable TINI_SUBREAPER to register Tini as a child subreaper, or run Tini as PID 1.
+time="2021-11-09T08:47:44.427468214Z" level=info msg="Starting up"
+time="2021-11-09T08:47:44.427496652Z" level=warning msg="Running in rootless mode. This mode has feature limitations."
+time="2021-11-09T08:47:44.427501350Z" level=info msg="Running with RootlessKit integration"
+time="2021-11-09T08:47:44.428546724Z" level=warning msg="could not change group /run/user/1000/docker.sock to docker: group docker not found"
+time="2021-11-09T08:47:44.430236551Z" level=info msg="libcontainerd: started new containerd process" pid=109
+time="2021-11-09T08:47:44.430268946Z" level=info msg="parsed scheme: \"unix\"" module=grpc
+time="2021-11-09T08:47:44.430276757Z" level=info msg="scheme \"unix\" not registered, fallback to default scheme" module=grpc
+time="2021-11-09T08:47:44.430297088Z" level=info msg="ccResolverWrapper: sending update to cc: {[{unix:///run/user/1000/docker/containerd/containerd.sock  <nil> 0 <nil>}] <nil> <nil>}" module=grpc
+time="2021-11-09T08:47:44.430306451Z" level=info msg="ClientConn switching balancer to \"pick_first\"" module=grpc
+time="2021-11-09T08:47:44.438910161Z" level=info msg="starting containerd" revision=5b46e404f6b9f661a205e28d59c982d3634148f8 version=v1.4.11
+time="2021-11-09T08:47:44.457332409Z" level=info msg="loading plugin \"io.containerd.content.v1.content\"..." type=io.containerd.content.v1
+time="2021-11-09T08:47:44.457883507Z" level=info msg="loading plugin \"io.containerd.snapshotter.v1.aufs\"..." type=io.containerd.snapshotter.v1
+time="2021-11-09T08:47:44.460190809Z" level=info msg="loading plugin \"io.containerd.snapshotter.v1.btrfs\"..." type=io.containerd.snapshotter.v1
+time="2021-11-09T08:47:44.460546275Z" level=info msg="skip loading plugin \"io.containerd.snapshotter.v1.btrfs\"..." error="path /home/rootless/.local/share/docker/containerd/daemon/io.containerd.snapshotter.v1.btrfs (ext4) must be a btrfs filesystem to be used with the btrfs snapshotter: skip plugin" type=io.containerd.snapshotter.v1
+time="2021-11-09T08:47:44.460571089Z" level=info msg="loading plugin \"io.containerd.snapshotter.v1.devmapper\"..." type=io.containerd.snapshotter.v1
+time="2021-11-09T08:47:44.460590062Z" level=warning msg="failed to load plugin io.containerd.snapshotter.v1.devmapper" error="devmapper not configured"
+time="2021-11-09T08:47:44.460597794Z" level=info msg="loading plugin \"io.containerd.snapshotter.v1.native\"..." type=io.containerd.snapshotter.v1
+time="2021-11-09T08:47:44.460644827Z" level=info msg="loading plugin \"io.containerd.snapshotter.v1.overlayfs\"..." type=io.containerd.snapshotter.v1
+time="2021-11-09T08:47:44.461182056Z" level=info msg="loading plugin \"io.containerd.snapshotter.v1.zfs\"..." type=io.containerd.snapshotter.v1
+time="2021-11-09T08:47:44.461523472Z" level=info msg="skip loading plugin \"io.containerd.snapshotter.v1.zfs\"..." error="path /home/rootless/.local/share/docker/containerd/daemon/io.containerd.snapshotter.v1.zfs must be a zfs filesystem to be used with the zfs snapshotter: skip plugin" type=io.containerd.snapshotter.v1
+time="2021-11-09T08:47:44.461540777Z" level=info msg="loading plugin \"io.containerd.metadata.v1.bolt\"..." type=io.containerd.metadata.v1
+time="2021-11-09T08:47:44.461577356Z" level=warning msg="could not use snapshotter devmapper in metadata plugin" error="devmapper not configured"
+time="2021-11-09T08:47:44.461587263Z" level=info msg="metadata content store policy set" policy=shared
+time="2021-11-09T08:47:44.482803005Z" level=info msg="loading plugin \"io.containerd.differ.v1.walking\"..." type=io.containerd.differ.v1
+time="2021-11-09T08:47:44.482836156Z" level=info msg="loading plugin \"io.containerd.gc.v1.scheduler\"..." type=io.containerd.gc.v1
+time="2021-11-09T08:47:44.482915203Z" level=info msg="loading plugin \"io.containerd.service.v1.introspection-service\"..." type=io.containerd.service.v1
+time="2021-11-09T08:47:44.482967771Z" level=info msg="loading plugin \"io.containerd.service.v1.containers-service\"..." type=io.containerd.service.v1
+time="2021-11-09T08:47:44.482982170Z" level=info msg="loading plugin \"io.containerd.service.v1.content-service\"..." type=io.containerd.service.v1
+time="2021-11-09T08:47:44.482992890Z" level=info msg="loading plugin \"io.containerd.service.v1.diff-service\"..." type=io.containerd.service.v1
+time="2021-11-09T08:47:44.483002927Z" level=info msg="loading plugin \"io.containerd.service.v1.images-service\"..." type=io.containerd.service.v1
+time="2021-11-09T08:47:44.483012782Z" level=info msg="loading plugin \"io.containerd.service.v1.leases-service\"..." type=io.containerd.service.v1
+time="2021-11-09T08:47:44.483022533Z" level=info msg="loading plugin \"io.containerd.service.v1.namespaces-service\"..." type=io.containerd.service.v1
+time="2021-11-09T08:47:44.483034350Z" level=info msg="loading plugin \"io.containerd.service.v1.snapshots-service\"..." type=io.containerd.service.v1
+time="2021-11-09T08:47:44.483044898Z" level=info msg="loading plugin \"io.containerd.runtime.v1.linux\"..." type=io.containerd.runtime.v1
+time="2021-11-09T08:47:44.483159724Z" level=info msg="loading plugin \"io.containerd.runtime.v2.task\"..." type=io.containerd.runtime.v2
+time="2021-11-09T08:47:44.483236897Z" level=info msg="loading plugin \"io.containerd.monitor.v1.cgroups\"..." type=io.containerd.monitor.v1
+time="2021-11-09T08:47:44.483622104Z" level=info msg="loading plugin \"io.containerd.service.v1.tasks-service\"..." type=io.containerd.service.v1
+time="2021-11-09T08:47:44.483650820Z" level=info msg="loading plugin \"io.containerd.internal.v1.restart\"..." type=io.containerd.internal.v1
+time="2021-11-09T08:47:44.483697047Z" level=info msg="loading plugin \"io.containerd.grpc.v1.containers\"..." type=io.containerd.grpc.v1
+time="2021-11-09T08:47:44.483710560Z" level=info msg="loading plugin \"io.containerd.grpc.v1.content\"..." type=io.containerd.grpc.v1
+time="2021-11-09T08:47:44.483720288Z" level=info msg="loading plugin \"io.containerd.grpc.v1.diff\"..." type=io.containerd.grpc.v1
+time="2021-11-09T08:47:44.483730843Z" level=info msg="loading plugin \"io.containerd.grpc.v1.events\"..." type=io.containerd.grpc.v1
+time="2021-11-09T08:47:44.483740721Z" level=info msg="loading plugin \"io.containerd.grpc.v1.healthcheck\"..." type=io.containerd.grpc.v1
+time="2021-11-09T08:47:44.483753140Z" level=info msg="loading plugin \"io.containerd.grpc.v1.images\"..." type=io.containerd.grpc.v1
+time="2021-11-09T08:47:44.483765761Z" level=info msg="loading plugin \"io.containerd.grpc.v1.leases\"..." type=io.containerd.grpc.v1
+time="2021-11-09T08:47:44.483775228Z" level=info msg="loading plugin \"io.containerd.grpc.v1.namespaces\"..." type=io.containerd.grpc.v1
+time="2021-11-09T08:47:44.483786149Z" level=info msg="loading plugin \"io.containerd.internal.v1.opt\"..." type=io.containerd.internal.v1
+time="2021-11-09T08:47:44.483844505Z" level=warning msg="failed to load plugin io.containerd.internal.v1.opt" error="mkdir /opt/containerd: permission denied"
+time="2021-11-09T08:47:44.483856059Z" level=info msg="loading plugin \"io.containerd.grpc.v1.snapshots\"..." type=io.containerd.grpc.v1
+time="2021-11-09T08:47:44.483866295Z" level=info msg="loading plugin \"io.containerd.grpc.v1.tasks\"..." type=io.containerd.grpc.v1
+time="2021-11-09T08:47:44.483880097Z" level=info msg="loading plugin \"io.containerd.grpc.v1.version\"..." type=io.containerd.grpc.v1
+time="2021-11-09T08:47:44.483891411Z" level=info msg="loading plugin \"io.containerd.grpc.v1.introspection\"..." type=io.containerd.grpc.v1
+time="2021-11-09T08:47:44.484028488Z" level=info msg=serving... address=/run/user/1000/docker/containerd/containerd-debug.sock
+time="2021-11-09T08:47:44.484069451Z" level=info msg=serving... address=/run/user/1000/docker/containerd/containerd.sock.ttrpc
+time="2021-11-09T08:47:44.484108487Z" level=info msg=serving... address=/run/user/1000/docker/containerd/containerd.sock
+time="2021-11-09T08:47:44.484124736Z" level=info msg="containerd successfully booted in 0.046647s"
+time="2021-11-09T08:47:44.492853934Z" level=info msg="parsed scheme: \"unix\"" module=grpc
+time="2021-11-09T08:47:44.492868670Z" level=info msg="scheme \"unix\" not registered, fallback to default scheme" module=grpc
+time="2021-11-09T08:47:44.492889588Z" level=info msg="ccResolverWrapper: sending update to cc: {[{unix:///run/user/1000/docker/containerd/containerd.sock  <nil> 0 <nil>}] <nil> <nil>}" module=grpc
+time="2021-11-09T08:47:44.492897092Z" level=info msg="ClientConn switching balancer to \"pick_first\"" module=grpc
+time="2021-11-09T08:47:44.493488495Z" level=info msg="parsed scheme: \"unix\"" module=grpc
+time="2021-11-09T08:47:44.493534480Z" level=info msg="scheme \"unix\" not registered, fallback to default scheme" module=grpc
+time="2021-11-09T08:47:44.493564446Z" level=info msg="ccResolverWrapper: sending update to cc: {[{unix:///run/user/1000/docker/containerd/containerd.sock  <nil> 0 <nil>}] <nil> <nil>}" module=grpc
+time="2021-11-09T08:47:44.493580772Z" level=info msg="ClientConn switching balancer to \"pick_first\"" module=grpc
+time="2021-11-09T08:47:44.570159776Z" level=warning msg="Your kernel does not support swap memory limit"
+time="2021-11-09T08:47:44.570175946Z" level=warning msg="Your kernel does not support CPU realtime scheduler"
+time="2021-11-09T08:47:44.570286907Z" level=info msg="Loading containers: start."
+time="2021-11-09T08:47:44.573927427Z" level=warning msg="Running modprobe bridge br_netfilter failed with message: Device \"bridge\" does not exist.\nbridge                151552  1 br_netfilter\nstp                    16384  1 bridge\nllc                    16384  2 bridge,stp\nDevice \"br_netfilter\" does not exist.\nbr_netfilter           24576  0 \nbridge                151552  1 br_netfilter\nmodprobe: can't change directory to '/lib/modules': No such file or directory\n, error: exit status 1"
+time="2021-11-09T08:47:44.765274112Z" level=info msg="Default bridge (docker0) is assigned with an IP address 172.17.0.0/16. Daemon option --bip can be used to set a preferred IP address"
+time="2021-11-09T08:47:44.985576321Z" level=info msg="Loading containers: done."
+time="2021-11-09T08:47:44.990772949Z" level=warning msg="Not using native diff for overlay2, this may cause degraded performance for building images: running in a user namespace" storage-driver=overlay2
+time="2021-11-09T08:47:44.990898811Z" level=info msg="Docker daemon" commit=79ea9d3 graphdriver(s)=overlay2 version=20.10.9
+time="2021-11-09T08:47:44.990988082Z" level=info msg="Daemon has completed initialization"
+time="2021-11-09T08:47:45.048827280Z" level=info msg="API listen on /run/user/1000/docker.sock"
+time="2021-11-09T08:47:45.052142247Z" level=info msg="API listen on [::]:2376"
+```
+
 ```sh
 / $ cat /etc/passwd
 ...
