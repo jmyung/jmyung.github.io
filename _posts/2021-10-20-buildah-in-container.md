@@ -204,7 +204,9 @@ spec:
 
 ```sh
 PID   USER     TIME  COMMAND
-    1 root      0:03 buildkitd
+    1 user      0:00 rootlesskit buildkitd --oci-worker-no-process-sandbox
+   12 user      0:00 /proc/self/exe buildkitd --oci-worker-no-process-sandbox
+   27 user      0:02 buildkitd --oci-worker-no-process-sandbox
 ```
 
 
